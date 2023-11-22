@@ -1,38 +1,63 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <random>
 
 using namespace std;
 
-struct Process {
+class Processo 
+{
+public:
     int id;
-    int burstTime; // Tempo total necessário para execução
-};
+    float tempo_consumido;
+    float indice_cpu;
 
-int main() {
-    int numProcesses = 3;
-    vector<Process> processes = {
-        {1, 10}, // Processo 1 requer 10 unidades de tempo
-        {2, 10}, // Processo 2 requer 10 unidades de tempo
-        {3, 10}  // Processo 3 requer 10 unidades de tempo
-    };
+    Processo(int id) : id(id), tempo_consumido(0), indice_cpu(0) {}
 
-    int quantum = 5; // Quantum de tempo para cada processo
-
-    while (true) {
-        bool allDone = true;
-        for (auto& process : processes) {
-            if (process.burstTime > 0) {
-                allDone = false;
-                int timeSlice = min(process.burstTime, quantum);
-                process.burstTime -= timeSlice;
-                cout << "Processo " << process.id << " executando por " << timeSlice << " unidades de tempo.\n";
-            }
-        }
-        if (allDone) {
-            break;
+    void atualizar_indice(float total_tempo) 
+    {
+        if (total_tempo > 0) 
+        {
+            indice_cpu = tempo_consumido / 4;
         }
     }
+};
 
-    cout << "Todos os processos foram executados com escalonamento garantido.\n";
+void escalonar(vector<Processo>& processos, int ciclos) 
+{
+    default_random_engine generator;
+    uniform_int_distribution<int> distribution(1, 3);
+
+    for (int i = 0; i < ciclos; ++i) 
+    {
+        float total_tempo = 0;
+        for (auto& p : processos) 
+        {
+            total_tempo += p.tempo_consumido;
+            p.atualizar_indice(total_tempo);
+        }
+
+        auto processo_escolhido = min_element(processos.begin(), processos.end(), 
+            [](const Processo& a, const Processo& b) 
+            {
+                return a.indice_cpu < b.indice_cpu;
+            });
+
+        cout << "Processo " << processo_escolhido->id  << " Tempo consumido: " << processo_escolhido->tempo_consumido << " escalonado (Índice: " << processo_escolhido->indice_cpu << ")\n";
+
+        processo_escolhido->tempo_consumido += distribution(generator);
+    }
+}
+
+int main() 
+{
+    vector<Processo> processos;
+    for (int i = 0; i < 4; ++i) 
+    {
+        processos.emplace_back(i);
+    }
+
+    escalonar(processos, 10);
+
     return 0;
 }
