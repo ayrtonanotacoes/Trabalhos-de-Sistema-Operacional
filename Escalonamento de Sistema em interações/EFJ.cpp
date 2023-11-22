@@ -26,7 +26,7 @@ int main() {
 
     while(true)
     {
-        if(processos.size() == -1)
+        if(processos.size() == 0)
             break;
         random_device rd;  // Dispositivo usado para obter uma semente
         mt19937 gen(rd()); // Motor de geração de números aleatórios (Mersenne Twister)
@@ -37,12 +37,15 @@ int main() {
         // Gera o número aleatório
         ;
         int idUsuario = loteriaUsuario[distrib(gen)];
+        int encontrou = 0;
         for(int y = 0; y < processos.size(); y++)
         {
             if(processos.at(y).idusuario == idUsuario)
             {
-                cout << "Processo " << processos.at(y).nome << " foi executado!";
-                
+                cout << "Processo " << processos.at(y).nome << " do usuário " << processos.at(y).idusuario << " foi executado!\n";
+                encontrou = y;
+                processos.erase(processos.begin() + encontrou);
+                break;
             }
 
         }
