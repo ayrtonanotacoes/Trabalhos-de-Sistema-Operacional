@@ -1,61 +1,53 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <random>
 
 using namespace std;
 
-class Processo 
-{
+class Process {
 public:
     int id;
-    float tempo_consumido;
-    float indice_cpu;
+    double creationTime;
+    double cpuTimeUsed;
+    double cpuTimeIndex;
 
-    void atualizar_indice(float total_tempo) 
-    {
-        if (total_tempo > 0) 
-        {
-            indice_cpu = tempo_consumido / 4;
-        }
+    Process(int id, double creationTime) : id(id), creationTime(creationTime), cpuTimeUsed(0.0), cpuTimeIndex(0.0) {}
+
+    void updateCpuTimeIndex(double totalTime, int n) {
+        double entitledCpuTime = totalTime / n;
+        cpuTimeIndex = cpuTimeUsed / entitledCpuTime;
     }
 };
 
-void escalonar(vector<Processo>& processos, int ciclos) 
-{
-    default_random_engine generator;
-    uniform_int_distribution<int> distribution(1, 3);
+int main() {
+    vector<Process> processes;
+    double totalTime = 100; // Exemplo de tempo total
+    int n = 5; // Número de processos
 
-    for (int i = 0; i < ciclos; ++i) 
-    {
-        float total_tempo = 0;
-        for (auto& p : processos) 
-        {
-            total_tempo += p.tempo_consumido;
-            p.atualizar_indice(total_tempo);
+    // Inicializa os processos
+    for(int i = 0; i < n; ++i) {
+        processes.emplace_back(i, 10 * i); // Cada processo tem um tempo de criação diferente
+    }
+
+    // Simulação do uso de CPU
+    for (int i = 0; i < 10; ++i) { // Executa 10 ciclos de escalonamento
+        // Atualiza o índice de CPU para cada processo
+        for (auto& process : processes) {
+            process.updateCpuTimeIndex(totalTime, n);
         }
 
-        auto processo_escolhido = min_element(processos.begin(), processos.end(), 
-            [](const Processo& a, const Processo& b) 
-            {
-                return a.indice_cpu < b.indice_cpu;
-            });
+        // Ordena os processos pelo índice de CPU (do menor para o maior)
+        sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
+            return a.cpuTimeIndex < b.cpuTimeIndex;
+        });
 
-        cout << "Processo " << processo_escolhido->id  << " Tempo consumido: " << processo_escolhido->tempo_consumido << " escalonado (Índice: " << processo_escolhido->indice_cpu << ")\n";
+        // Executa o processo com o índice mais baixo
+        Process& selectedProcess = processes.front();
+        cout << "Executando processo " << selectedProcess.id << " com índice de CPU " << selectedProcess.cpuTimeIndex << endl;
+        selectedProcess.cpuTimeUsed += 10; // Simula o uso de CPU
 
-        processo_escolhido->tempo_consumido += distribution(generator);
+        totalTime += 10; // Atualiza o tempo total
     }
-}
-
-int main() 
-{
-    vector<Processo> processos;
-    for (int i = 0; i < 4; ++i) 
-    {
-        processos.emplace_back(i);
-    }
-
-    escalonar(processos, 10);
 
     return 0;
 }
