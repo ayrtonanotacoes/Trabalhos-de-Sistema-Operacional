@@ -12,8 +12,6 @@ public:
     float tempo_consumido;
     float indice_cpu;
 
-    Processo(int id) : id(id), tempo_consumido(0), indice_cpu(0) {}
-
     void atualizar_indice(float total_tempo) 
     {
         if (total_tempo > 0) 

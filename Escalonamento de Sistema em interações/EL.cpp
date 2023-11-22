@@ -13,7 +13,6 @@ const int QUANTUM = 20; // tempo em milissegundos
 struct Processo {
     int id;
     int prioridade;
-    Processo(int id,int prioridade) : id(id), prioridade(prioridade) {}
 };
 
 vector<int> inicializaProcessos(const vector<Processo>& processos) {
@@ -61,7 +60,7 @@ void rodarEscalonador() {
 
     for (int i = 0; i < 10; ++i) { // Realizar 10 sorteios
         int idProcessoEscolhido = sorteiaBilhete(saida);
-        cout << "Processo " << idProcessoEscolhido << " ganhou 20 ms de CPU" << endl;
+        cout << "Processo " << processos.at(idProcessoEscolhido).id << " ganhou 20 ms de CPU" << endl;
         this_thread::sleep_for(chrono::milliseconds(QUANTUM));
     }
 }
