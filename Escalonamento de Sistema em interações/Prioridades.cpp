@@ -34,7 +34,6 @@ int main() {
         cout << "Tempo de execução: " << currentProcess.burstTime << " unidades.\n";
 
         // Simulando execução do processo
-        // Na prática, aqui você incluiria a lógica de execução do processo
     }
 
     cout << "Todos os processos foram executados.\n";
